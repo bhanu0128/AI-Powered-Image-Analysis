@@ -115,7 +115,10 @@ class ImageAnalyzer:
         caption_results = self._captioner(image)
 
         object_predictions = [
-            Prediction(label=item.get("label", "object"), score=float(item.get("score", 0.0)))
+            Prediction(
+                label=item.get("label", "unknown object"),
+                score=float(item.get("score", 0.0)),
+            )
             for item in object_results
         ]
         top_objects = self._deduplicate(object_predictions, top_k=top_k)
