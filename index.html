@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Image Analyzer Pro - Smart Image Recognition</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <span class="logo-icon">🤖</span>
+                <span class="logo-text">AI Image Analyzer Pro</span>
+            </div>
+            <div class="nav-controls">
+                <button class="nav-btn" id="historyBtn" title="View History">📋 History</button>
+                <button class="nav-btn" id="settingsBtn" title="Settings">⚙️ Settings</button>
+                <button class="nav-btn theme-toggle" id="themeBtn" title="Toggle Theme">🌙</button>
+            </div>
+        </div>
+    </nav>
+
+    <div id="toast" class="toast"></div>
+
+    <div class="container">
+        <!-- Hero Section -->
+        <!-- Hero Section -->
+        <section class="hero">
+            <h1 class="hero-title">AI-Powered Image Analysis</h1>
+            <p class="hero-subtitle">Extract insights, get suggestions, and organize your analysis with ease</p>
+            <div class="hero-stats">
+                <div class="stat">
+                    <span class="stat-number" id="totalAnalysis">0</span>
+                    <span class="stat-label">Analyses</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-number" id="totalSaved">0</span>
+                    <span class="stat-label">Saved</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-number" id="avgTime">0s</span>
+                    <span class="stat-label">Avg Time</span>
+                </div>
+            </div>
+        </section>
+
+        <div class="content-wrapper">
+            <div class="upload-column">
+                <div class="card upload-card">
+                    <div class="quick-actions">
+                        <button class="action-btn" id="pasteBtn" title="Paste from clipboard">📋 Paste</button>
+                        <button class="action-btn" id="cameraBtn" title="Use Camera">📷 Camera</button>
+                        <button class="action-btn" id="urlBtn" title="Image URL">🔗 URL</button>
+                    </div>
+
+                    <div class="upload-area" id="uploadArea">
+                        <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/>
+                        </svg>
+                        <h3>Drag & Drop Image</h3>
+                        <p>or click to browse files</p>
+                        <span class="file-formats">JPG, PNG, GIF, WebP • Max 20MB</span>
+                    </div>
+                    <input type="file" id="fileInput" accept="image/*" class="hidden-input">
+                    <button class="btn btn-primary btn-lg" id="uploadBtn">
+                        <span>📁 Choose Image</span>
+                    </button>
+
+                    <!-- Image Preview -->
+                    <div id="previewContainer" class="preview-container hidden">
+                        <div class="preview-wrapper">
+                            <img id="previewImage" alt="Preview" class="preview-image">
+                            <div class="preview-actions">
+                                <button class="action-icon-btn" id="rotateBtn" title="Rotate">🔄</button>
+                                <button class="action-icon-btn" id="zoomBtn" title="Zoom">🔍</button>
+                                <button class="action-icon-btn" id="removeImageBtn" title="Remove">✕</button>
+                            </div>
+                        </div>
+                        <button class="btn btn-secondary btn-block" id="analyzeBtn">
+                            <span>⚡ Analyze Image</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card recent-card hidden" id="recentCard">
+                    <h3>📌 Recent</h3>
+                    <div id="recentList" class="recent-list"></div>
+                </div>
+            </div>
+
+            <div class="results-column">
+                <div id="loader" class="loader hidden">
+                    <div class="loader-content">
+                        <div class="spinner"></div>
+                        <p>Analyzing with AI...</p>
+                        <span class="loading-subtitle">This may take a few seconds</span>
+                        <div class="progress-bar">
+                            <div class="progress-fill"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="resultsContainer" class="results-container hidden">
+                    <div class="results-header">
+                        <div class="header-title">
+                            <h2>✓ Analysis Complete</h2>
+                            <span class="result-badge">Success</span>
+                        </div>
+                        <div class="results-actions">
+                            <button class="result-action-btn" id="favoriteBtn" title="Add to Favorites">🤍</button>
+                            <button class="result-action-btn" id="copyJsonBtn" title="Copy JSON">📋</button>
+                            <button class="result-action-btn" id="downloadBtn" title="Download">⬇️</button>
+                            <button class="result-action-btn" id="shareBtn" title="Share">📤</button>
+                        </div>
+                    </div>
+
+                    <div id="resultsTable" class="results-grid"></div>
+                    <div class="metadata-section hidden" id="metadataSection">
+                        <h3>📊 Analysis Metadata</h3>
+                        <div class="metadata-info">
+                            <div class="meta-item">
+                                <span class="meta-label">Time Taken:</span>
+                                <span class="meta-value" id="timeTaken">-</span>
+                            </div>
+                            <div class="meta-item">
+                                <span class="meta-label">Confidence:</span>
+                                <span class="meta-value" id="confidence">-</span>
+                            </div>
+                            <div class="meta-item">
+                                <span class="meta-label">Image Size:</span>
+                                <span class="meta-value" id="imageSize">-</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Error Message -->
+                    <div id="errorMessage" class="error-message hidden"></div>
+                </div>
+
+                <!-- Empty State -->
+                <div id="emptyState" class="empty-state">
+                    <div class="empty-icon">📸</div>
+                    <h3>No image analyzed yet</h3>
+                    <p>Upload an image to get started with AI analysis</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <section class="features">
+        <div class="features-container">
+            <div class="feature-item">
+                <div class="feature-icon">⚡</div>
+                <h4>Fast Processing</h4>
+                <p>Sub-second analysis with Gemini 2.5</p>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon">🎯</div>
+                <h4>Accurate Results</h4>
+                <p>Powered by advanced AI</p>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon">💡</div>
+                <h4>Smart Suggestions</h4>
+                <p>Get AI-powered recommendations</p>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon">💾</div>
+                <h4>Cloud Sync</h4>
+                <p>Auto-save and export options</p>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon">🔄</div>
+                <h4>Batch Processing</h4>
+                <p>Analyze multiple images</p>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon">📊</div>
+                <h4>Analytics</h4>
+                <p>Track your analysis stats</p>
+            </div>
+        </div>
+    </section>
+
+    <div id="historyModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>📋 Analysis History</h2>
+                <button class="modal-close" id="closeHistoryBtn">✕</button>
+            </div>
+            <div class="modal-search">
+                <input type="text" id="searchHistory" placeholder="Search history...">
+            </div>
+            <div id="historyList" class="history-list"></div>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" id="clearHistoryBtn">Clear All</button>
+                <button class="btn btn-primary" id="exportHistoryBtn">📥 Export</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="settingsModal" class="modal hidden">
+        <div class="modal-content settings-modal">
+            <div class="modal-header">
+                <h2>⚙️ Settings</h2>
+                <button class="modal-close" id="closeSettingsBtn">✕</button>
+            </div>
+            <div class="settings-group">
+                <h3>General</h3>
+                <label class="setting-item">
+                    <input type="checkbox" id="autoSaveToggle" checked>
+                    <span>Auto-save analysis</span>
+                </label>
+                <label class="setting-item">
+                    <input type="checkbox" id="notificationsToggle" checked>
+                    <span>Show notifications</span>
+                </label>
+                <label class="setting-item">
+                    <input type="checkbox" id="darkModeToggle">
+                    <span>Dark mode</span>
+                </label>
+            </div>
+            <div class="settings-group">
+                <h3>Analysis</h3>
+                <label class="setting-item">
+                    <input type="checkbox" id="includeSuggestionsToggle" checked>
+                    <span>Include suggestions</span>
+                </label>
+                <label class="setting-item">
+                    <input type="checkbox" id="includeMetadataToggle" checked>
+                    <span>Show metadata</span>
+                </label>
+            </div>
+            <div class="settings-group">
+                <h3>Storage</h3>
+                <button class="btn btn-secondary btn-block" id="resetStorageBtn">Reset All Data</button>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <p>AI Image Analyzer Pro • Built with ❤️ using PixelInsight Engine</p>
+            <p class="footer-version">v2.0 • Premium Features</p>
+        </div>
+    </footer>
+
+    <script src="config.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
